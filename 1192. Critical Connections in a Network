@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
+        vector<vector<int>> adj(n,vector<int>()) , res;
+        vector<bool> visited(n, false);
+        vector<int> disc(n,-1);
+        vector<int> low(n,-1);
+        int time=0;
+        for(auto edge: connections)
+        {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        for(int x=0;x<n;x++)
+        {
+            if(!visited[x])dfs(x,adj,visited,disc,low,x,res,time);
+        }
+        return res;
+    }
+    void dfs(int node, vector<vector<int>> &adj, vector<bool> &visited, vector<int> &disc, vector<int> &low, int parent, vector<vector<int>> &res, int &time)
+    {
+        visited[node]=true;
+        time++;
+        disc[node]=low[node]=time;
+        for(auto curnode: adj[node])
+        {
+            if(!visited[curnode])
+            {
+                dfs(curnode,adj,visited, disc, low, node, res, time);
+                low[node]=min(low[curnode],low[node]);
+                if(low[curnode]>disc[node])res.push_back({node,curnode});
+            }
+            else if(curnode!=parent)
+            {
+                low[node]=min(low[node],disc[curnode]);
+            }
+        }
+    }
+};
